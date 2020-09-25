@@ -1,0 +1,336 @@
+mysql: [Warning] C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe: ignoring option '--no-beep' due to invalid value ''.
+Enter password: *************
+Welcome to the MySQL monitor.  Commands end with ; or \g.
+Your MySQL connection id is 8
+Server version: 8.0.21 MySQL Community Server - GPL
+
+Copyright (c) 2000, 2020, Oracle and/or its affiliates. All rights reserved.
+
+Oracle is a registered trademark of Oracle Corporation and/or its
+affiliates. Other names may be trademarks of their respective
+owners.
+
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+
+mysql> SHOW DATABASES
+    -> ;
++----------------------------+
+| Database                   |
++----------------------------+
+| bazy_danych_laboratorium_1 |
+| information_schema         |
+| mysql                      |
+| performance_schema         |
+| sys                        |
++----------------------------+
+5 rows in set (0.26 sec)
+
+mysql> SHOW TABLES FROM bazy_danych_laboratorium_1;
+Empty set (0.16 sec)
+
+mysql> USE bazy_danych_laboratorium_1;
+Database changed
+mysql> CREATE TABLE zamowienia (id_zamowienia TINY-TEXT PRIMARY KEY, numer_zamowienia INT, data_zamowienia DATE-TIME);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'TINY-TEXT PRIMARY KEY, numer_zamowienia INT, data_zamowienia DATE-TIME)' at line 1
+mysql> CREATE TABLE zamowienia (id_zamowienia TINYTEXT PRIMARY KEY, numer_zamowienia INT, data_zamowienia DATETIME);
+ERROR 1170 (42000): BLOB/TEXT column 'id_zamowienia' used in key specification without a key length
+mysql> CREATE TABLE zamowienia (id_zamowienia TEXT PRIMARY KEY, numer_zamowienia INT, data_zamowienia DATETIME);
+ERROR 1170 (42000): BLOB/TEXT column 'id_zamowienia' used in key specification without a key length
+mysql> CREATE TABLE zamowienia (id_zamowienia TINYTEXT(20) PRIMARY KEY, numer_zamowienia INT, data_zamowienia DATETIME);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near '(20) PRIMARY KEY, numer_zamowienia INT, data_zamowienia DATETIME)' at line 1
+mysql> CREATE TABLE zamowienia (id_zamowienia VARCHAR(20) PRIMARY KEY, numer_zamowienia INT, data_zamowienia DATETIME);
+Query OK, 0 rows affected (1.60 sec)
+
+mysql> SHOW TABLES FROM bazy_danych_laboratorium_1;
++--------------------------------------+
+| Tables_in_bazy_danych_laboratorium_1 |
++--------------------------------------+
+| zamowienia                           |
++--------------------------------------+
+1 row in set (0.06 sec)
+
+mysql> SHOW COLUMNS FROM zamowienia;
++------------------+-------------+------+-----+---------+-------+
+| Field            | Type        | Null | Key | Default | Extra |
++------------------+-------------+------+-----+---------+-------+
+| id_zamowienia    | varchar(20) | NO   | PRI | NULL    |       |
+| numer_zamowienia | int         | YES  |     | NULL    |       |
+| data_zamowienia  | datetime    | YES  |     | NULL    |       |
++------------------+-------------+------+-----+---------+-------+
+3 rows in set (0.11 sec)
+
+mysql> CREATE TABLE artykuly (id_artykulu VARCHAR(20) PRIMARY KEY, numer_artykulu INT, cena_artykulu FLOAT(20,2) UNSIGNED);
+Query OK, 0 rows affected, 2 warnings (2.32 sec)
+
+mysql> SHOW TABLES FROM bazy_danych_laboratorium_1;
++--------------------------------------+
+| Tables_in_bazy_danych_laboratorium_1 |
++--------------------------------------+
+| artykuly                             |
+| zamowienia                           |
++--------------------------------------+
+2 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM artykuly;
++----------------+----------------------+------+-----+---------+-------+
+| Field          | Type                 | Null | Key | Default | Extra |
++----------------+----------------------+------+-----+---------+-------+
+| id_artykulu    | varchar(20)          | NO   | PRI | NULL    |       |
+| numer_artykulu | int                  | YES  |     | NULL    |       |
+| cena_artykulu  | float(20,2) unsigned | YES  |     | NULL    |       |
++----------------+----------------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM zamowienia;
++------------------+-------------+------+-----+---------+-------+
+| Field            | Type        | Null | Key | Default | Extra |
++------------------+-------------+------+-----+---------+-------+
+| id_zamowienia    | varchar(20) | NO   | PRI | NULL    |       |
+| numer_zamowienia | int         | YES  |     | NULL    |       |
+| data_zamowienia  | datetime    | YES  |     | NULL    |       |
++------------------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> CREATE TABLE artykuly_w_zamowieniu (id VARCHAR(20) PRIMARY KEY, numer_zamowienia INT FOREIGN KEY REFERENCES zamowienia(id_zamowienia), numer_artykulu INT FOREIGN KEY REFERENCES artykuly(id_artykulu), ilosc INT, cena FLOAT(20,2) UNSIGNED);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'FOREIGN KEY REFERENCES zamowienia(id_zamowienia), numer_artykulu INT FOREIGN KEY' at line 1
+mysql> CREATE TABLE artykuly_w_zamowie (id VARCHAR(20) PRIMARY KEY, numer_zamowienia INT, numer_artykulu INT, ilosc INT, cena FLOAT(20,2) UNSIGNED, CONSTRAINT fk_artykulywzamowieniu_numerzamowienia FOREIGN KEY(numer_zamowienia) REFERENCES zamowienia(id_zamowienia), CONSTRAINT fk_artykulywzamowieniu_numerartykulu FOREIGN KEY(numer_artykulu) REFERENCES artykuly(id_artykulu));
+ERROR 3780 (HY000): Referencing column 'numer_zamowienia' and referenced column 'id_zamowienia' in foreign key constraint 'fk_artykulywzamowieniu_numerzamowienia' are incompatible.
+mysql> CREATE TABLE artykuly_w_zamowieniu (id VARCHAR(20) PRIMARY KEY, numer_zamowienia VARCHAR(20), numer_artykulu VARCHAR(20), ilosc INT, cena FLOAT(20,2) UNSIGNED, CONSTRAINT fk_artykulywzamowieniu_numerzamowienia FOREIGN KEY(numer_zamowienia) REFERENCES zamowienia(id_zamowienia), CONSTRAINT fk_artykulywzamowieniu_numerartykulu FOREIGN KEY(numer_artykulu) REFERENCES artykuly(id_artykulu));
+Query OK, 0 rows affected, 2 warnings (0.78 sec)
+
+mysql> SHOW TABLES;
++--------------------------------------+
+| Tables_in_bazy_danych_laboratorium_1 |
++--------------------------------------+
+| artykuly                             |
+| artykuly_w_zamowieniu                |
+| zamowienia                           |
++--------------------------------------+
+3 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM artykuly;
++----------------+----------------------+------+-----+---------+-------+
+| Field          | Type                 | Null | Key | Default | Extra |
++----------------+----------------------+------+-----+---------+-------+
+| id_artykulu    | varchar(20)          | NO   | PRI | NULL    |       |
+| numer_artykulu | int                  | YES  |     | NULL    |       |
+| cena_artykulu  | float(20,2) unsigned | YES  |     | NULL    |       |
++----------------+----------------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM artykuly_w_zamowieniu;
++------------------+----------------------+------+-----+---------+-------+
+| Field            | Type                 | Null | Key | Default | Extra |
++------------------+----------------------+------+-----+---------+-------+
+| id               | varchar(20)          | NO   | PRI | NULL    |       |
+| numer_zamowienia | varchar(20)          | YES  | MUL | NULL    |       |
+| numer_artykulu   | varchar(20)          | YES  | MUL | NULL    |       |
+| ilosc            | int                  | YES  |     | NULL    |       |
+| cena             | float(20,2) unsigned | YES  |     | NULL    |       |
++------------------+----------------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM zamowienia;
++------------------+-------------+------+-----+---------+-------+
+| Field            | Type        | Null | Key | Default | Extra |
++------------------+-------------+------+-----+---------+-------+
+| id_zamowienia    | varchar(20) | NO   | PRI | NULL    |       |
+| numer_zamowienia | int         | YES  |     | NULL    |       |
+| data_zamowienia  | datetime    | YES  |     | NULL    |       |
++------------------+-------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> CREATE TABLE klient (id VARCHAR(20), imie VARCHAR(20), nazwisko VARCHAR(20), pesel INT, adres_id VARCHAR(20), CONSTARINT fk_klient_adresId FOREIGN KEY(adres_id) REFERENCES adres(id));
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'fk_klient_adresId FOREIGN KEY(adres_id) REFERENCES adres(id))' at line 1
+mysql> CREATE TABLE adres (id VARCHAR(20), miasto VARCHAR(20), ulica VARCHAR(20), kod_pocztowy VARCHAR(20));
+Query OK, 0 rows affected (0.90 sec)
+
+mysql> CREATE TABLE faktura (id VARCHAR(20), kwota FLOAT(20,2) UNSIGNED, numer INT);
+Query OK, 0 rows affected, 2 warnings (0.90 sec)
+
+mysql> CREATE TABLE klient (id VARCHAR(20), imie VARCHAR(20), nazwisko VARCHAR(20), pesel INT, adres_id VARCHAR(20), CONSTRAINT fk_klient_adresId FOREIGN KEY(adres_id) REFERENCES adres(id));
+ERROR 1822 (HY000): Failed to add the foreign key constraint. Missing index for constraint 'fk_klient_adresId' in the referenced table 'adres'
+mysql> ADD UNIQUE [adres] [VARCHAR(20)] (id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ADD UNIQUE [adres] [VARCHAR(20)] (id)' at line 1
+mysql> ADD UNIQUE (id);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'ADD UNIQUE (id)' at line 1
+mysql> SHOW TABLES;
++--------------------------------------+
+| Tables_in_bazy_danych_laboratorium_1 |
++--------------------------------------+
+| adres                                |
+| artykuly                             |
+| artykuly_w_zamowieniu                |
+| faktura                              |
+| zamowienia                           |
++--------------------------------------+
+5 rows in set (0.00 sec)
+
+mysql> SHOW COLUMNS FROM adres;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| id           | varchar(20) | YES  |     | NULL    |       |
+| miasto       | varchar(20) | YES  |     | NULL    |       |
+| ulica        | varchar(20) | YES  |     | NULL    |       |
+| kod_pocztowy | varchar(20) | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+4 rows in set (0.00 sec)
+
+mysql> ALTER TABLE adres ADD CONSTRAINT fk_adres_id UNIQUE KEY(id);
+Query OK, 0 rows affected (0.57 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> CREATE TABLE klient (id VARCHAR(20), imie VARCHAR(20), nazwisko VARCHAR(20), pesel INT, adres_id VARCHAR(20), CONSTRAINT fk_adres_id FOREIGN KEY(adres_id) REFERENCES adres(id));
+Query OK, 0 rows affected (0.42 sec)
+
+mysql> SHOW TABLES;
++--------------------------------------+
+| Tables_in_bazy_danych_laboratorium_1 |
++--------------------------------------+
+| adres                                |
+| artykuly                             |
+| artykuly_w_zamowieniu                |
+| faktura                              |
+| klient                               |
+| zamowienia                           |
++--------------------------------------+
+6 rows in set (0.00 sec)
+
+mysql> SHOW COLUMNS FROM klient;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| id       | varchar(20) | YES  |     | NULL    |       |
+| imie     | varchar(20) | YES  |     | NULL    |       |
+| nazwisko | varchar(20) | YES  |     | NULL    |       |
+| pesel    | int         | YES  |     | NULL    |       |
+| adres_id | varchar(20) | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM adres;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| id           | varchar(20) | YES  | UNI | NULL    |       |
+| miasto       | varchar(20) | YES  |     | NULL    |       |
+| ulica        | varchar(20) | YES  |     | NULL    |       |
+| kod_pocztowy | varchar(20) | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> ALTER TABLE zamowienia ADD COLUMN (id_klient);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 1
+mysql> ALTER TABLE zamowienia ADD (id_klient);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 1
+mysql> ALTER TABLE zamowienia ADD COLUMN id_klient VARCHAR(20);
+Query OK, 0 rows affected (0.34 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE zamowienia ADD CONSTRAINT fk_klient_id FOREIGN KEY(id_klient) REFERENCES klient(id);
+ERROR 1822 (HY000): Failed to add the foreign key constraint. Missing index for constraint 'fk_klient_id' in the referenced table 'klient'
+mysql> ALTER TABLE klient ADD CONSTRAINT fk_klient_id UNIQUE KEY(id);
+Query OK, 0 rows affected (0.33 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE zamowienia ADD CONSTRAINT fk_klient_id FOREIGN KEY(id_klient) REFERENCES klient(id);
+Query OK, 0 rows affected (1.26 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE faktura ADD CONSTRAINT fk_faktura_id UNIQUE KEY(id);
+Query OK, 0 rows affected (0.32 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE zamowienia ADD COLUMN (id_faktura);
+ERROR 1064 (42000): You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ')' at line 1
+mysql> ALTER TABLE zamowienia ADD COLUMN id_faktura VARCHAR(20);
+Query OK, 0 rows affected (0.35 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> ALTER TABLE zamowienia ADD CONSTRAINT fk_faktura_id FOREIGN KEY(id_faktura) REFERENCES faktura(id);
+Query OK, 0 rows affected (1.34 sec)
+Records: 0  Duplicates: 0  Warnings: 0
+
+mysql> SHOW TABLES;
++--------------------------------------+
+| Tables_in_bazy_danych_laboratorium_1 |
++--------------------------------------+
+| adres                                |
+| artykuly                             |
+| artykuly_w_zamowieniu                |
+| faktura                              |
+| klient                               |
+| zamowienia                           |
++--------------------------------------+
+6 rows in set (0.00 sec)
+
+mysql> SHOW COLUMNS FROM adres;
++--------------+-------------+------+-----+---------+-------+
+| Field        | Type        | Null | Key | Default | Extra |
++--------------+-------------+------+-----+---------+-------+
+| id           | varchar(20) | YES  | UNI | NULL    |       |
+| miasto       | varchar(20) | YES  |     | NULL    |       |
+| ulica        | varchar(20) | YES  |     | NULL    |       |
+| kod_pocztowy | varchar(20) | YES  |     | NULL    |       |
++--------------+-------------+------+-----+---------+-------+
+4 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM artykuly;
++----------------+----------------------+------+-----+---------+-------+
+| Field          | Type                 | Null | Key | Default | Extra |
++----------------+----------------------+------+-----+---------+-------+
+| id_artykulu    | varchar(20)          | NO   | PRI | NULL    |       |
+| numer_artykulu | int                  | YES  |     | NULL    |       |
+| cena_artykulu  | float(20,2) unsigned | YES  |     | NULL    |       |
++----------------+----------------------+------+-----+---------+-------+
+3 rows in set (0.00 sec)
+
+mysql> SHOW COLUMNS FROM artykuly_w_zamowieniu;
++------------------+----------------------+------+-----+---------+-------+
+| Field            | Type                 | Null | Key | Default | Extra |
++------------------+----------------------+------+-----+---------+-------+
+| id               | varchar(20)          | NO   | PRI | NULL    |       |
+| numer_zamowienia | varchar(20)          | YES  | MUL | NULL    |       |
+| numer_artykulu   | varchar(20)          | YES  | MUL | NULL    |       |
+| ilosc            | int                  | YES  |     | NULL    |       |
+| cena             | float(20,2) unsigned | YES  |     | NULL    |       |
++------------------+----------------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM faktura;
++-------+----------------------+------+-----+---------+-------+
+| Field | Type                 | Null | Key | Default | Extra |
++-------+----------------------+------+-----+---------+-------+
+| id    | varchar(20)          | YES  | UNI | NULL    |       |
+| kwota | float(20,2) unsigned | YES  |     | NULL    |       |
+| numer | int                  | YES  |     | NULL    |       |
++-------+----------------------+------+-----+---------+-------+
+3 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM klient;
++----------+-------------+------+-----+---------+-------+
+| Field    | Type        | Null | Key | Default | Extra |
++----------+-------------+------+-----+---------+-------+
+| id       | varchar(20) | YES  | UNI | NULL    |       |
+| imie     | varchar(20) | YES  |     | NULL    |       |
+| nazwisko | varchar(20) | YES  |     | NULL    |       |
+| pesel    | int         | YES  |     | NULL    |       |
+| adres_id | varchar(20) | YES  | MUL | NULL    |       |
++----------+-------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> SHOW COLUMNS FROM zamowienia;
++------------------+-------------+------+-----+---------+-------+
+| Field            | Type        | Null | Key | Default | Extra |
++------------------+-------------+------+-----+---------+-------+
+| id_zamowienia    | varchar(20) | NO   | PRI | NULL    |       |
+| numer_zamowienia | int         | YES  |     | NULL    |       |
+| data_zamowienia  | datetime    | YES  |     | NULL    |       |
+| id_klient        | varchar(20) | YES  | MUL | NULL    |       |
+| id_faktura       | varchar(20) | YES  | MUL | NULL    |       |
++------------------+-------------+------+-----+---------+-------+
+5 rows in set (0.01 sec)
+
+mysql> ^C
+mysql>
